@@ -1,0 +1,2 @@
+current test_ids for BioTac_20_50.pkl and Icub_20_50.pkl is:
+[28 36 41 39  3  4 49 30 47 32]

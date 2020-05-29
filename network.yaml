@@ -1,0 +1,22 @@
+simulation:
+    Ts: 1.0
+    tSample: 9 # 300
+neuron:
+    type:     SRMALPHA
+    theta:    10
+    tauSr:    10.0
+    tauRef:   1.0
+    scaleRef: 2     # relative to theta
+    tauRho:   1     # relative to theta #0.43429448190325176
+    scaleRho: 1
+training:
+    error:
+        type: NumSpikes #ProbSpikes #NumSpikes
+        probSlidingWin: 20  # only valid for ProbSpikes
+        tgtSpikeRegion: {start: 0, stop: 9}    # only valid for NumSpikes and ProbSpikes
+        tgtSpikeCount: {true: 7, false: 2}    # only valid for NumSpikes
+    path:
+        # out:     OutFiles/
+        in:      ../binarized_data_1_s/
+        train:   train_temp_50.txt
+        test:    test_temp_50.txt

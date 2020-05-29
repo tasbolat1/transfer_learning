@@ -1,0 +1,3 @@
+**.pyc
+timeseries-clustering-vae/models_and_stat/*
+timeseries-clustering-vae/tsne/df_latent_all*

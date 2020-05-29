@@ -1,0 +1,10 @@
+
+\.idea/
+
+\.ipynb_checkpoints/
+
+vrae/__pycache__/
+
+data/*
+
+model_dir/*
