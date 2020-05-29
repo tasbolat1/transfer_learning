@@ -107,7 +107,7 @@ torch.manual_seed(1)
 
 # Load data
 data_dir = '../../new_data_folder/'
-logDir = 'useful_models_old_data/'
+logDir = 'models_and_stats/'
 
 # new model
 model_name_B = 'BT19_joint_ae_wrB_{}_wcB_{}_wrI_{}_wcI_{}_wC_{}_{}'.format(w_rB,w_cB, w_rI, w_cI, w_mse, str(kfold_number))

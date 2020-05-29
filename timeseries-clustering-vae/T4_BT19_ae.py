@@ -5,8 +5,9 @@
 
 
 '''
-python T2_IcubCNN_ae.py -k 0 -c 2 -r 1 -rr 0
+python T4_BT19_ae.py -k 0 -c 3 -r 1 -rr 0
 '''
+
 # Import
 
 import os,sys
@@ -49,12 +50,12 @@ args = parser.parse_args()
 # In[3]:
 
 
-# # dummy class to replace argparser
+# dummy class to replace argparser
 # class Args:
 #   kfold = 0
 #   reduction = 1
-#   cuda = '1'
-#   removal = 2
+#   cuda = '3'
+#   removal = 0
 
 # args=Args()
 
@@ -74,23 +75,24 @@ else:
 kfold_number = args.kfold
 data_reduction_ratio = args.reduction
 removal = args.removal
-shuffle = True
+shuffle = False
 num_class = 20
-sequence_length = 75
-number_of_features = 60
+sequence_length = 400
+number_of_features = 19
 
 hidden_size = 90
 hidden_layer_depth = 1
 latent_length = 40
 batch_size = 32
 learning_rate = 0.0005
-n_epochs = 2000
+n_epochs = 2
+
 dropout_rate = 0.2
 cuda = True # options: True, False
 print_every=30
 clip = True # options: True, False
 max_grad_norm=5
-header = "CNN"
+header = None
 w_r = 0.01
 w_c = 1
 np.random.seed(1)
@@ -102,9 +104,10 @@ torch.manual_seed(1)
 
 # Load data
 data_dir = '../../new_data_folder/'
-logDir = 'models_and_stats/'
+kfold_number = 0
 
-model_name = 'IcubCNN_ae_{}_rm_{}_wrI_{}_wC_{}_{}'.format(data_reduction_ratio, removal, w_r, w_c, str(kfold_number))
+logDir = 'models_and_stats/'
+model_name = 'BT19_ae_{}_rm_{}_wrI_{}_wC_{}_{}'.format(data_reduction_ratio, removal, w_r, w_c, str(kfold_number))
 device = torch.device("cuda:{}".format(args.cuda))
 print("Loading data...")
 train_loader, val_loader, train_dataset, val_dataset = get_trainValLoader(data_dir, k=kfold_number, spike_ready=False, batch_size=batch_size, shuffle=shuffle)
@@ -169,7 +172,6 @@ for epoch in range(n_epochs):
         
         if i >= len(train_loader)-removal:
             break
-        
         if model.header == 'CNN':
             x = XI
         else:
@@ -200,8 +202,8 @@ for epoch in range(n_epochs):
 
     # fill stats
     if epoch < 20 or epoch%200 == 0:
-        print("train last batch: recon_loss {:.3f}".format(loss))
-    train_accuracy = correct / train_num
+        print("train last batch {} of {}: recon_loss {:.3f}".format(i,len(train_loader),loss))
+    train_accuracy = correct / train_num 
     train_loss /= train_num
     epoch_train_loss.append(train_loss)
     epoch_train_acc.append(train_accuracy) 
@@ -227,21 +229,24 @@ for epoch in range(n_epochs):
         cl_loss = cl_loss_fn(output, y)
         recon_loss = recon_loss_fn(x_decoded, x)
         loss = w_c*cl_loss + w_r *recon_loss
-    
+        
         # compute classification acc
         pred = output.data.max(1, keepdim=True)[1]  # get the index of the max log-probability
         correct += pred.eq(y.data.view_as(pred)).long().cpu().sum().item()
         
         # accumulator
         val_loss += loss.item()
-
+    
+#     print("test last batch: recon_loss {}, kl_loss {}, cl_loss {}".format(recon_loss, kl_loss, cl_loss))
     # fill stats
     val_accuracy = correct / val_num# / len(val_loader.dataset)
     val_loss /= val_num #len(val_loader.dataset)
 
     epoch_val_loss.append(val_loss)  # only save the last batch
     epoch_val_acc.append(val_accuracy)
+    
     if epoch < 20 or epoch%200 == 0:
+        print("train_num {}, val_num {}".format(train_num, val_num))
         print('Epoch: {} Loss: train {:.3f}, valid {:.3f}. Accuracy: train: {:.3f}, valid {:.3f}'.format(epoch, train_loss, val_loss, train_accuracy, val_accuracy))
     
     # choose model
@@ -250,7 +255,7 @@ for epoch in range(n_epochs):
         print('Saving model at {} epoch to{}'.format(epoch, model_dir))
         max_val_acc = val_accuracy
         torch.save(model.state_dict(), model_dir)
-
+        
 training_end =  datetime.now()
 training_time = training_end -training_start 
 print("training takes time {}".format(training_time))
@@ -341,7 +346,7 @@ ax.set_xlabel('epoch')
 ax.set_ylabel('acc')
 ax.grid(True)
 plt.legend(loc='upper right')
-figname = logDir + model_name +"_train1_acc.png"
+figname = logDir + model_name +"_train_acc.png"
 plt.savefig(figname)
 plt.show()
 
@@ -349,5 +354,11 @@ plt.show()
 # In[14]:
 
 
-# 
+# print(epoch_cl_train_acc)
+
+
+# In[ ]:
+
+
+
 
