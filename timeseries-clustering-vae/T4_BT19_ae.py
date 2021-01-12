@@ -32,7 +32,7 @@ from torch.utils.data.dataset import random_split
 from torch.utils.data import DataLoader, TensorDataset
 from datetime import datetime
 from tas_utils_bs import get_trainValLoader, get_testLoader
-import plotly
+# import plotly
 
 
 # In[2]:

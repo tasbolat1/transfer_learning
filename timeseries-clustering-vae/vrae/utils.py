@@ -5,8 +5,8 @@ from random import randint
 import os
 import matplotlib.pyplot as plt
 
-from plotly.graph_objs import *
-import plotly
+# from plotly.graph_objs import *
+# import plotly
 
 
 def plot_clustering(z_run, labels, engine ='plotly', download = False, folder_name ='clustering', filefix=''):
